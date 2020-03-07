@@ -30,7 +30,7 @@ int main (){
 		s = file.get();
 		letters[s]++;}
 		
-	
+cout<<"hello   \n";	
     
 
 
