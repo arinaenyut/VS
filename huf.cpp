@@ -33,7 +33,7 @@ int main (){
 
 //	for (it=letters.begin(); it!=letters.end(); it++)// вывод символ-частота
 //	cout << it->first << ' ' << it->second << '\n';
-
+//new
     		
     
 
