@@ -5,22 +5,39 @@
             "label": "debug",
             "type": "shell",
             "command": "",
-            "args": ["g++","-g", "${relativeFile}", "-o","a.exe"]
+            "args": [
+                "g++",
+                "-g",
+                "${relativeFile}",
+                "-o",
+                "a.exe"
+            ]
         },
         {
             "label": "Compile and run",
             "type": "shell",
             "command": "",
             "args": [
-                "g++","-g", "${relativeFile}", "-o","${fileBasenameNoExtension}.out", "&&", "clear" , "&&" , "./${fileBasenameNoExtension}.out"
+                "g++",
+                "-g",
+                "${relativeFile}",
+                "-o",
+                "${fileBasenameNoExtension}.out",
+                "&&",
+                "clear",
+                "&&",
+                "./${fileBasenameNoExtension}.out"
             ],
             "group": {
                 "kind": "build",
-                "isDefault": true  
+                "isDefault": true
             },
             "problemMatcher": {
                 "owner": "cpp",
-                "fileLocation": ["relative", "${workspaceRoot}"],
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}"
+                ],
                 "pattern": {
                     "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
                     "file": 1,
@@ -31,6 +48,23 @@
                 }
             }
         },
-        
+        {
+            "type": "shell",
+            "label": "cpp build active file",
+            "command": "/usr/bin/cpp",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build"
+        }
     ]
 }

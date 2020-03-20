@@ -25,12 +25,16 @@ class Node{
 int main (){
 	ifstream file ("text.txt", ios::binary);
 	map <char,int> letters;
+	map <char,int>::iterator it;
 	char s;
 	while (!file.eof()){
 		s = file.get();
 		letters[s]++;}
-		
-cout<<"hello   \n";	
+
+//	for (it=letters.begin(); it!=letters.end(); it++)// вывод символ-частота
+//	cout << it->first << ' ' << it->second << '\n';
+
+    		
     
 
 
