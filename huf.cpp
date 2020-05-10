@@ -113,7 +113,7 @@ int main() {
 	for (it = letters.begin(); it != letters.end(); it++){
 		g<<it->first << it->second;}
 
-	//идти по файлу 1 и записывать коды каждого символа в файл 2.
+	//идти по файлу 1 и записывать коды каждого символа в файл 2
 	while (!file.eof()){
 		char c = file.get();
 		vector <bool> x = table[c];
