@@ -115,27 +115,39 @@ int main() {
 
 	//идти по файлу 1 и записывать коды каждого символа в файл 2
 	while (!file.eof()){
-		char c = file.get();
-		vector <bool> x = table[c];
-		for (int n = 0; n<x.size(); n++){
+		char c = file.get();//берем символ
+		vector <bool> x = table[c];//берем его код
+		for (int n = 0; n<x.size(); n++){//записываем код, пока байт не заполнится, потом сливаем его в файл
 			buf = buf | x[n]<<(7-pos);
 			pos++;
 			if(pos==8){pos = 0; g<<buf; buf = 0;}
 			}
 			
 		}
-	
-	
-
+	//outpup содержит в первой части символ-частоту, после - закодированный текст
+	file.close();
+	g.close();
 	//обратное преобразование
+	//считываем частоты
+	ifstream G("output.txt", ios::out | ios::binary);
+	int numb = G.get();//первый байт - количество 
+	map <char, int> lettersG; //ассоциативный массив символ - частота
+	//char s;
+	//int num_of_sym = 0;
+	//while (!file.eof()) {
+	//	s = file.get();
+	//	letters[s]++;}
+	for (int k = 0; k < numb; k++){
+	//сначала символ потом код, записать в мап
+		}
+	
 	//составление дерева 
 
 
 
 
 
-	file.close();
-	g.close();
+	
 	return 0;
 }
 
