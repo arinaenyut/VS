@@ -128,20 +128,19 @@ int main() {
 	file.close();
 	g.close();
 	//обратное преобразование
-	//считываем частоты
 	ifstream G("output.txt", ios::out | ios::binary);
-	int numb = G.get();//первый байт - количество 
-	map <char, int> lettersG; //ассоциативный массив символ - частота
-	//char s;
-	//int num_of_sym = 0;
-	//while (!file.eof()) {
-	//	s = file.get();
-	//	letters[s]++;}
-	for (int k = 0; k < numb; k++){
-	//сначала символ потом код, записать в мап
+	Node *p = root;//из корня
+	pos = 0; char byte;//pos - позиция в байте byte - очередные 8 бит из файла
+	byte = G.get();//берем байт
+	while (!G.eof()){
+		bool b = byte & (1 << (7 - pos));//выделяем бит
+		if (b) p = p->right; //не 0 - по дереву вправо
+		else p =p->left;//0 - влево
+		if (p->left==NULL && p->right==NULL) {cout<<p->sym; p=root;}//когда потомков нет -  пишем символ, возвращаемся в корень
+		pos++;
+		if(pos == 8) {pos = 0; byte = G.get();}//считывает новый симол, после заполнения байта;}
 		}
-	
-	//составление дерева 
+	G.close();
 
 
 
