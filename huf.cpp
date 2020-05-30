@@ -49,9 +49,12 @@ void AssocTable(Node* root) {
 
 
 int main() {
-
+	int ch;
+	cout<<"Выберите действие:\n1)Закодировать файл\n2)Декодировать файл\n";
+	cin>>ch;
+	if (ch ==1){
 	//подсчет частот 
-	ifstream file("С++/text.txt", ios:: out | ios::binary);
+	ifstream file("1text.txt", ios:: out | ios::binary);
 	map <char, int> letters; //ассоциативный массив символ - частота
 	char s;
 	int num_of_sym = 0;
@@ -96,22 +99,22 @@ int main() {
 //переместить указатель в файле в начало
 	file.clear();
 	file.seekg(0);
-//вывести строку битов
-	cout<<"Закодированная строка битов\n";
-	while (!file.eof()){
-		char c;
-		c = file.get();
-		//cout<<c<<" ---- ";
-		vector <bool> x = table[c];
-		for (int n = 0; n<x.size(); n++)
-			cout<<x[n];
-		//	cout<<endl;
-		}
+		//вывести строку битов
+	//	cout<<"Закодированная строка битов\n";
+	//	while (!file.eof()){
+	//		char c;
+	//		c = file.get();
+	//		//cout<<c<<" ---- ";
+	//		vector <bool> x = table[c];
+	//		for (int n = 0; n<x.size(); n++)
+	//			cout<<x[n];
+	//		//	cout<<endl;
+	//		}
 	
 	
 	
 	//открыть новый файл для закодированого сообщения	
-	ofstream g("output.txt", ios::out | ios::binary);
+	ofstream g("output.huff", ios::out | ios::binary);
 	int pos = 0; 
 	char buf = 0;
 	//записать частоты в начало и их количество
@@ -135,10 +138,11 @@ int main() {
 	
 	file.close();
 	g.close();
+	}
 	//обратное преобразование
 	//считываем частоты
-
-	ifstream G("output.txt", ios::out );//| ios::binary
+	if (ch == 2){
+	ifstream G("output.huff", ios::out );//| ios::binary
 	int numb, ii = 0, nn; char ss;
 	G >> numb;//первый байт - количество cим-в в алф-те
 	cout<<" СЧИТАТЬ "<<numb<<endl;
@@ -197,7 +201,7 @@ int main() {
 		if(pos == 8) {pos = 0; byte =G.get();}//считывает новый симол, после заполнения байта;}
 		}
 	G.close();
-*/
+}
 	
 	return 0;
 }
