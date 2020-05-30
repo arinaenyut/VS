@@ -51,18 +51,21 @@ void AssocTable(Node* root) {
 int main() {
 
 	//подсчет частот 
-	ifstream file("text.txt", ios:: out | ios::binary);
+	ifstream file("С++/text.txt", ios:: out | ios::binary);
 	map <char, int> letters; //ассоциативный массив символ - частота
 	char s;
+	int num_of_sym = 0;
 	while (!file.eof()) {
 		s = file.get();
 		letters[s]++;
+		
 	}
 	map<char, int>::iterator it; 
 	////////вывод частот
 	cout<<"\nСимвол-частота\n";
 	 for (it = letters.begin(); it != letters.end(); it++) {
-		cout << it->first << " : " << it->second << endl;}
+		//cout << it->first << "!!!(код)" <<(int)it->first<<" : "<<  it->second << endl;}
+		cout << it->first<< " : "<<  it->second << endl;}
 	cout<<endl;
 	
 	//записываем вершины в лист
@@ -89,18 +92,21 @@ int main() {
 
 	AssocTable(root);//соответсвия символов и нового кода
 	char q;
+	
 //переместить указатель в файле в начало
 	file.clear();
 	file.seekg(0);
 //вывести строку битов
-/*	cout<<"Закодированная строка битов\n";
+	cout<<"Закодированная строка битов\n";
 	while (!file.eof()){
 		char c;
 		c = file.get();
+		//cout<<c<<" ---- ";
 		vector <bool> x = table[c];
 		for (int n = 0; n<x.size(); n++)
 			cout<<x[n];
-		}*/
+		//	cout<<endl;
+		}
 	
 	
 	
@@ -108,15 +114,17 @@ int main() {
 	ofstream g("output.txt", ios::out | ios::binary);
 	int pos = 0; 
 	char buf = 0;
-	//записать частоты в начало
-	
+	//записать частоты в начало и их количество
+	cout<<"ДЛИНА АЛФАВИТА!"<<" - "<<letters.size();
+	g<<letters.size();//сначала записываем длину алфавита
+	//потом переписываем символ(1байт)-частота(4байта)
 	for (it = letters.begin(); it != letters.end(); it++){
 		g<<it->first << it->second;}
 
 	//идти по файлу 1 и записывать коды каждого символа в файл 2
 	while (!file.eof()){
 		char c = file.get();//берем символ
-		vector <bool> x = table[c];//берем его код
+		vector <bool> x = table[c]; //берем его код
 		for (int n = 0; n<x.size(); n++){//записываем код, пока байт не заполнится, потом сливаем его в файл
 			buf = buf | x[n]<<(7-pos);
 			pos++;
@@ -124,28 +132,72 @@ int main() {
 			}
 			
 		}
-	//outpup содержит в первой части символ-частоту, после - закодированный текст
+	
 	file.close();
 	g.close();
 	//обратное преобразование
-	ifstream G("output.txt", ios::out | ios::binary);
-	Node *p = root;//из корня
-	pos = 0; char byte;//pos - позиция в байте byte - очередные 8 бит из файла
-	byte = G.get();//берем байт
+	//считываем частоты
+
+	ifstream G("output.txt", ios::out );//| ios::binary
+	int numb, ii = 0, nn; char ss;
+	G >> numb;//первый байт - количество cим-в в алф-те
+	cout<<" СЧИТАТЬ "<<numb<<endl;
+	map <char, int> lettersG; //ассоциативный массив символ - частота
+	while (ii != numb){//считать из файла символ-частота 
+		ss = G.get();//символ
+		G >> nn;//частота
+		lettersG[ss] = nn;
+		ii++;
+		}	
+		
+	//проверка массива
+	cout<<"\nСимвол-частота2!!!!!\n";
+	map<char, int>::iterator iq; 
+	 for (iq = lettersG.begin(); iq != lettersG.end(); iq++) {
+		cout << iq->first << " : " << iq->second << endl;}
+	cout<<endl;	
+		
+	
+
+
+	//записываем вершины в лист
+	list <Node*> tG;
+	map <char, int>::iterator iqr;
+	for (iqr = lettersG.begin(); iqr != lettersG.end(); ++iqr) {
+		Node* P = new Node;
+		P->sym = iqr->first;//char
+		P->fq = iqr->second;//int
+		tG.push_back(P);
+	}
+
+	while (tG.size() != 1){
+		tG.sort(Compare());//сортировать по частоте
+		
+		Node* Left = tG.front();//в начале самый редкий
+		tG.pop_front();//выкинуть
+		Node* Right = tG.front();//второй редкий
+		tG.pop_front();
+		Node* Mother = new Node(Left, Right);//новый узел с суммой частот
+		tG.push_back(Mother);
+	}
+	Node* ROOT = tG.front();//в конце останется только узел 
+
+	AssocTable(ROOT);//соответсвия символов и нового кода
+
+
+	Node *P = ROOT;
+	int pos = 0; char byte;//pos!!!
+	byte = G.get();
 	while (!G.eof()){
-		bool b = byte & (1 << (7 - pos));//выделяем бит
-		if (b) p = p->right; //не 0 - по дереву вправо
-		else p =p->left;//0 - влево
-		if (p->left==NULL && p->right==NULL) {cout<<p->sym; p=root;}//когда потомков нет -  пишем символ, возвращаемся в корень
+		bool b = byte & (1 << (7 - pos));
+		if (b) P = P->right; //1 вправо
+		else P =P->left;//0 влево
+		if (P->left==NULL && P->right==NULL) {cout<<P->sym; P = ROOT;}
 		pos++;
-		if(pos == 8) {pos = 0; byte = G.get();}//считывает новый симол, после заполнения байта;}
+		if(pos == 8) {pos = 0; byte =G.get();}//считывает новый симол, после заполнения байта;}
 		}
 	G.close();
-
-
-
-
-
+*/
 	
 	return 0;
 }
