@@ -52,7 +52,7 @@ int main() {
 	int ch;
 	cout<<"Выберите действие:\n1)Закодировать файл\n2)Декодировать файл\n";
 	cin>>ch;
-	if (ch ==1){
+	if (ch == 1){
 	//подсчет частот 
 	ifstream file("1text.txt", ios:: out | ios::binary);
 	map <char, int> letters; //ассоциативный массив символ - частота
