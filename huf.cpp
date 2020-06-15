@@ -49,12 +49,13 @@ void AssocTable(Node* root) {
 
 
 int main() {
+	setlocale(LC_ALL,"Russian");
 	int ch;
 	cout<<"Выберите действие:\n1)Закодировать файл\n2)Декодировать файл\n";
 	cin>>ch;
 	if (ch == 1){
 	//подсчет частот 
-	ifstream file("1text.txt", ios:: out | ios::binary);
+	ifstream file("text.txt", ios:: out | ios::binary);
 	map <char, int> letters; //ассоциативный массив символ - частота
 	char s;
 	int num_of_sym = 0;
@@ -64,13 +65,6 @@ int main() {
 		
 	}
 	map<char, int>::iterator it; 
-	////////вывод частот
-	cout<<"\nСимвол-частота\n";
-	 for (it = letters.begin(); it != letters.end(); it++) {
-		//cout << it->first << "!!!(код)" <<(int)it->first<<" : "<<  it->second << endl;}
-		cout << it->first<< " : "<<  it->second << endl;}
-	cout<<endl;
-	
 	//записываем вершины в лист
 	list <Node*> t;
 	map <char, int>::iterator itr;
@@ -99,26 +93,11 @@ int main() {
 //переместить указатель в файле в начало
 	file.clear();
 	file.seekg(0);
-		//вывести строку битов
-	//	cout<<"Закодированная строка битов\n";
-	//	while (!file.eof()){
-	//		char c;
-	//		c = file.get();
-	//		//cout<<c<<" ---- ";
-	//		vector <bool> x = table[c];
-	//		for (int n = 0; n<x.size(); n++)
-	//			cout<<x[n];
-	//		//	cout<<endl;
-	//		}
-	
-	
-	
 	//открыть новый файл для закодированого сообщения	
 	ofstream g("output.huff", ios::out | ios::binary);
 	int pos = 0; 
 	char buf = 0;
 	//записать частоты в начало и их количество
-	cout<<"ДЛИНА АЛФАВИТА!"<<" - "<<letters.size();
 	g<<letters.size();//сначала записываем длину алфавита
 	//потом переписываем символ(1байт)-частота(4байта)
 	for (it = letters.begin(); it != letters.end(); it++){
@@ -145,7 +124,6 @@ int main() {
 	ifstream G("output.huff", ios::out );//| ios::binary
 	int numb, ii = 0, nn; char ss;
 	G >> numb;//первый байт - количество cим-в в алф-те
-	cout<<" СЧИТАТЬ "<<numb<<endl;
 	map <char, int> lettersG; //ассоциативный массив символ - частота
 	while (ii != numb){//считать из файла символ-частота 
 		ss = G.get();//символ
@@ -153,16 +131,6 @@ int main() {
 		lettersG[ss] = nn;
 		ii++;
 		}	
-		
-	//проверка массива
-	cout<<"\nСимвол-частота2!!!!!\n";
-	map<char, int>::iterator iq; 
-	 for (iq = lettersG.begin(); iq != lettersG.end(); iq++) {
-		cout << iq->first << " : " << iq->second << endl;}
-	cout<<endl;	
-		
-	
-
 
 	//записываем вершины в лист
 	list <Node*> tG;
