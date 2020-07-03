@@ -12,7 +12,7 @@ bool cmp(const pair<char, int>& A, const pair<char, int>& B){//функция с
 
 int main(){
 
-	string text = "abcaaaabbbcccccaa";
+	string text = "abcaaaabbbcccccaaa";
 	map<char, int> fq;	//символ-частота
 	for (char b : text)
 		fq[b]++;
