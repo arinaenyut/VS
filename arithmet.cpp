@@ -12,25 +12,26 @@ bool cmp(const pair<char, int>& A, const pair<char, int>& B){//функция с
 	return A.second > B.second;
 }
 
-int IndexSym(char symbol, string alphabet){//return index
+int IndexSym(char symbol, string alphabet){
 	int i = 0;
 	for (; i < alphabet.size(); i++)
-	
 		if (symbol == alphabet.at(i)) return (i + 1);
         }
 
-//процедура переноса найденных битов - вывод
-void BitsPlusFollow(int bit){
-	cout<<bit;
-	for (; bits_to_follow > 0; bits_to_follow--)
-		cout<<(!bit);
-	
+//процедура переноса найденных битов в строку с кодом
+void BitsPlusFollow(bool bit, string& encode_text){
+	encode_text.push_back(bit+48);
+	for (;bits_to_follow > 0; bits_to_follow-- )
+		encode_text.push_back(!bit+48);		
 }
 
 
 int main(){
-
-	string text = "abcaaaabbbcccccaaa";
+	int ch;
+	cout<<"1)code\n2)decode\n";
+	cin>>ch;
+if (ch == 1){
+	string text = "kob.ko";
 	map<char, int> fq;	//символ-частота
 	for (char b : text)
 		fq[b]++;
@@ -60,6 +61,7 @@ int main(){
 	}
 	cout<<"ABC "<<alphabet<<endl;
 	
+	//изменение границ
 	bits_to_follow = 0;
    	int len = text.length();
 	unsigned short int* h = new unsigned short int[len];
@@ -71,17 +73,19 @@ int main(){
 	unsigned short int Half = First_qtr * 2;
 	unsigned short int Third_qtr = First_qtr * 3;
 	
+	string encode_text;
 	for (i = 0; i < len;){//i - symbol
+	cout<<"\nl "<<l[i]<<" h "<<h[i]<<endl;
 		int j = IndexSym(text.at(i), alphabet);//j - index
 		i++;
 		l[i] = l[i-1] + b[j-1] * (h[i-1] - l[i-1] + 1) / delitel;
 		h[i] = l[i-1] + b[j] * (h[i-1] - l[i-1] + 1)/ delitel - 1;
 		for (;;){		  //обрабатываем варианты
 			if (h[i] < Half){ //переполнения
-				BitsPlusFollow(0);
+				BitsPlusFollow(0, encode_text);
 			}
 			else if (l[i] >= Half){
-				BitsPlusFollow(1);
+				BitsPlusFollow(1, encode_text);
 				l[i] -= Half;
 				h[i] -= Half;
 			}
@@ -93,11 +97,47 @@ int main(){
 			    l[i] += l[i];
 			    h[i] += h[i] + 1;	
 		}
-		//cout<<"l "<<l[i]<<" h "<<h[i]<<endl;
+		
 	}
 	bits_to_follow = 1;
-	if (l[i] < First_qtr) BitsPlusFollow(1);
-	else BitsPlusFollow(0);
+	if (l[i] < First_qtr) BitsPlusFollow(1, encode_text);
+	else BitsPlusFollow(0, encode_text);
+	//cout<<encode_text;
+	fstream G("output.txt", ios::binary | ios::out);
+	string result = "";
+	int pos = 0;
+	unsigned char byte = 0;
+	for (int i = 0; i < encode_text.size(); i++){
+		byte = (byte << 1) | (encode_text[i] - '0');
+		pos++;
+		if (pos == 8){
+			pos = 0;
+			result += byte;
+			byte = 0;
+		}
+	}
+	if (pos != 0){
+		while (pos != 8){
+			byte = (byte << 1);
+			pos++;
+		}
+		result += byte;
+	}		
+	int size = alphabet.size();
+	G.write((char*)&size, sizeof(int));
+	for(int i = 0, j = 1; i < size, j < size + 1; i++, j++){
+		G.write((char*)&alphabet[i], sizeof(char));
+		G.write((char*)&fq[j], sizeof(int));
+	}
+	for (int i = 0; i < result.size(); i++)
+		G << result[i];	
+	}
+	
+if(ch == 2){
+	
+	
+	
+	}
 
 			
 	
