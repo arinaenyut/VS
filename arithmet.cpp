@@ -12,7 +12,7 @@ bool cmp(const pair<char, int>& A, const pair<char, int>& B){//функция с
 	return A.second > B.second;
 }
 
-int IndexSym(char symbol, string alphabet){
+int IndexSym(char symbol, string alphabet){//поиск индекса
 	for (int i =0 ; i < alphabet.size(); i++)
 		if (symbol == alphabet.at(i)) return (i + 1);
 }
@@ -24,7 +24,7 @@ void BitsPlusFollow(bool bit, string& encode_text){
 		encode_text.push_back(!bit+48);	
 }
 
-string get_message(){
+string get_message(){//считать из файла
 	string text;
 	ifstream File("text.txt", ios::in);
 	while (!File.eof()){
@@ -38,7 +38,7 @@ string get_message(){
 	return text;
 }
 
-
+//процедура кодирования
 string arithmet_encode(string text, int* b, string alphabet){
 	int len = text.length();
 	unsigned short int* h = new unsigned short int[len];
@@ -81,6 +81,7 @@ string arithmet_encode(string text, int* b, string alphabet){
 		}
 
 	}
+	//завершение кодирования потока
 	bits_to_follow = 1;
 	if (l[i] < First_qtr) BitsPlusFollow(1, code);
 	else BitsPlusFollow(0, code);
@@ -106,7 +107,7 @@ unsigned short int ReadBit(char s){
 		return 1;
 	return 0;
 }
-
+//процедура декодирования
 string arithmet_decode(string code, string alphabet, int* b){
 	unsigned short int* h = new unsigned short int[code.length()];
 	unsigned short int* l = new unsigned short int[code.length()];
@@ -171,7 +172,7 @@ string atoi(unsigned char a){
 	//cout<<output;
 	return bitchar;
 }
-string string_to_bin(string str, int d){
+string string_to_bin(string str, int d){//преобразование в двоичный вид
 	string bincode = "";
 	for (int i = 0; i < str.size(); i++)
 		bincode += atoi(str[i]);
@@ -188,7 +189,7 @@ int main(){
 	switch (number) {
 		case(1)://кодирование
 		{
-			string text = get_message();
+			string text = get_message();//переписываем сообщение в стринг
 			map<char, int> fq;       // символ-частота
 			for (char b : text)
 				fq[b]++;
@@ -216,30 +217,30 @@ int main(){
 				}				
 			//cout<<"abcd "<<alphabet;
 			
-			string CODE = arithmet_encode(text, b, alphabet);
+			string CODE = arithmet_encode(text, b, alphabet);//процедура кодирования
 			//cout << CODE << endl;	
 			
-			int k = (CODE.size() % 8 == 0) ? 0 : 8 - CODE.size() % 8;
+			int k = (CODE.size() % 8 == 0) ? 0 : 8 - CODE.size() % 8;//если длина не кратна 8
 			
 			fstream tab("out.txt", ios::binary | ios::out);
 			int SIZE = alphabet.size();
-			tab.write((char*)&k, sizeof(char));
-			tab.write((char*)&SIZE, sizeof(int));
+			tab.write((char*)&k, sizeof(char));//записываем что не хватает битов
+			tab.write((char*)&SIZE, sizeof(int));//записываем размер алфавита
 			for (int i = 0, j = 1; i < SIZE, j < SIZE + 1; i++, j++){
-				tab.write((char*)&alphabet[i], sizeof(char));
-				tab.write((char*)&b[j], sizeof(int));
+				tab.write((char*)&alphabet[i], sizeof(char));//буква
+				tab.write((char*)&b[j], sizeof(int));//диапазон
 			}			
 			
-			int count = 0;
+			int count = 0;//побайтовая записб в файл
 			char byte = 0;
 			for (int i = 0; i < CODE.size(); i++){
 				byte = (byte << 1) | (CODE[i] - '0');
 				count++;
-				if (count == 8){
+				if (count == 8){//если байт заполнен - записать
 					count = 0; tab << byte; byte = 0;
 				}
 			}
-			if (count != 0){
+			if (count != 0){//сообщение закончилось, а байт не заполнен
 				while (count != 8){
 					byte = (byte << 1); count++;
 				}
@@ -256,18 +257,18 @@ int main(){
 			fstream File("out.txt", ios::binary | ios::in);
 			int SIZE = 0;
 			int k = 0;
-			File.read((char*)&k, sizeof(char));
-			File.read((char*)&SIZE, sizeof(int));
+			File.read((char*)&k, sizeof(char));//считываем сколько не хватает
+			File.read((char*)&SIZE, sizeof(int));//длина алфавита
 			int* fq = new int[SIZE + 1];
 			fq[0] = 0;
 			char s = 0;
 			string alphabet = "";
 			for (int i = 1; i < SIZE + 1; i++){
-				File.read((char*)&s, sizeof(char));
+				File.read((char*)&s, sizeof(char));//считываем алфавит
 				alphabet += s;
-				File.read((char*)&fq[i], sizeof(int));
+				File.read((char*)&fq[i], sizeof(int));//считываем частоты
 			}
-			string code = "";
+			string code = "";//считываем кодированный текст
 			while (!File.eof()){
 				string temp;
 				getline(File, temp);
@@ -277,10 +278,10 @@ int main(){
 			}
 			File.close();
 			
-			string bincode = string_to_bin(code, k);
-			string decoded = arithmet_decode(bincode, alphabet, fq);
+			string bincode = string_to_bin(code, k);//преобразуем в двоичный вид
+			string decoded = arithmet_decode(bincode, alphabet, fq);//процедура декодирования
 			
-			ofstream file("newfile.txt", ios::out);
+			ofstream file("newfile.txt", ios::out);//записать  файл
 			for (int i = 0; i < decoded.size(); i++){
 				file << decoded[i]; cout<<decoded[i];}
 					
