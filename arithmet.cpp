@@ -87,13 +87,106 @@ string arithmet_encode(string text, int* b, string alphabet){
 	return code;
 }
 
+unsigned short int Read16Bit(string code){
+	int i;
+	unsigned short int value = 0;
+	for (i = 0; i < 16; i++){
+		if (i == code.size()){
+			return value;
+		}
+		if ('1' == code[i]){
+			value = value | (1 << (15 - i));
+		}
+	}
+	return value;
+}
+
+unsigned short int ReadBit(char s){
+	if (s == '1')
+		return 1;
+	return 0;
+}
+
+string arithmet_decode(string code, string alphabet, int* b){
+	unsigned short int* h = new unsigned short int[code.length()];
+	unsigned short int* l = new unsigned short int[code.length()];
+	l[0] = 0;
+	h[0] = 65535;
+	unsigned int delitel = b[alphabet.size()];
+	unsigned short int First_qtr = (h[0] + 1) / 4;
+	unsigned short int Half = 2 * First_qtr;
+	unsigned short int Third_qtr = 3 * First_qtr;
+	unsigned short int value;
+	int idx = 16;
+	string decode_text;
+	value = Read16Bit(code);
+	int d = 0;
+	
+	for (int i = 1; i < delitel + 1; i++){
+		unsigned int freq = ((value - l[i - 1] + 1) * delitel - 1) / (h[i - 1] - l[i - 1] + 1);
+		int j;
+		for (j = 1; b[j] <= freq; j++);//поиск символа
+		l[i] = l[i - 1] + ((h[i - 1] - l[i - 1] + 1) * b[j - 1]) / delitel;
+		h[i] = l[i - 1] + ((h[i - 1] - l[i - 1] + 1) * b[j]) / delitel - 1;
+
+		for (;;){//обрабатываем варианты переполения
+			if (h[i] < Half)
+				;//ничего
+			else if (l[i] >= Half){
+				value -= Half; l[i] -= Half; h[i] -= Half;
+			}
+			else if ((l[i] >= First_qtr) && (h[i] < Third_qtr)){
+				l[i] -= First_qtr;
+				h[i] -= First_qtr;
+				value -= First_qtr;
+			}
+			else break;
+			l[i] += l[i];
+			h[i] += h[i] + 1;
+		
+			if (idx < code.length())
+				d = ReadBit(code.at(idx++));
+			value += value + d;
+			}
+		
+		decode_text.push_back(alphabet.at(j - 1));
+		}	
+	return decode_text;
+}
+
+
+string atoi(unsigned char a){
+	string bitchar = "";
+	while (a != 0){
+		string bit = a % 2 == 0 ? "0" : "1";
+		bitchar += bit;
+		a /= 2;
+	}
+	if (bitchar.size() < 8){
+		int k = 8 - bitchar.size();
+		for (int i = 0; i < k; i++)	
+			bitchar += "0";
+	}
+	reverse(bitchar.begin(), bitchar.end());
+	//cout<<output;
+	return bitchar;
+}
+string string_to_bin(string str, int d){
+	string bincode = "";
+	for (int i = 0; i < str.size(); i++)
+		bincode += atoi(str[i]);
+	
+	bincode = bincode.substr(0, bincode.size() - d);
+	return bincode;
+
+}
 
 int main(){
 	int number;
 	cout << "1)code\n2)decode\n";
 	cin >> number;
 	switch (number) {
-		case(1):
+		case(1)://кодирование
 		{
 			string text = get_message();
 			map<char, int> fq;       // символ-частота
@@ -121,10 +214,10 @@ int main(){
 				char b = p.first;
 				alphabet += b;
 				}				
-			cout<<"abcd "<<alphabet;
+			//cout<<"abcd "<<alphabet;
 			
 			string CODE = arithmet_encode(text, b, alphabet);
-			cout << CODE << endl;	
+			//cout << CODE << endl;	
 			
 			int k = (CODE.size() % 8 == 0) ? 0 : 8 - CODE.size() % 8;
 			
@@ -157,8 +250,40 @@ int main(){
 			break;
 		}
 
-		case(2):
+		case(2)://декодирование
 		{
+			
+			fstream File("out.txt", ios::binary | ios::in);
+			int SIZE = 0;
+			int k = 0;
+			File.read((char*)&k, sizeof(char));
+			File.read((char*)&SIZE, sizeof(int));
+			int* fq = new int[SIZE + 1];
+			fq[0] = 0;
+			char s = 0;
+			string alphabet = "";
+			for (int i = 1; i < SIZE + 1; i++){
+				File.read((char*)&s, sizeof(char));
+				alphabet += s;
+				File.read((char*)&fq[i], sizeof(int));
+			}
+			string code = "";
+			while (!File.eof()){
+				string temp;
+				getline(File, temp);
+				if (!File.eof())
+					temp += '\n';
+			code += temp;
+			}
+			File.close();
+			
+			string bincode = string_to_bin(code, k);
+			string decoded = arithmet_decode(bincode, alphabet, fq);
+			
+			ofstream file("newfile.txt", ios::out);
+			for (int i = 0; i < decoded.size(); i++){
+				file << decoded[i]; cout<<decoded[i];}
+					
 		break;
 		}
 	}
